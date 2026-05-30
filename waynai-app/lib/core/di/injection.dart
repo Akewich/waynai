@@ -1,22 +1,26 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:waynai/core/constants/api_endpoints.dart';
+import 'package:waynai/data/repositories/auth_repository.dart';
+import 'package:waynai/data/repositories/quest_repository.dart';
+import 'package:waynai/logic/auth/auth_bloc.dart';
+import 'package:waynai/logic/quest_board/quest_board_bloc.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   // Network
   sl.registerLazySingleton(() => Dio(BaseOptions(
-        baseUrl: 'http://localhost:8080', // ปรับเปลี่ยนตาม IP ของ Go Backend
+        baseUrl: ApiEndpoints.baseUrl,
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 3),
       )));
 
-  // Services
-  // sl.registerLazySingleton<QuestService>(() => QuestServiceImpl(sl()));
-
   // Repositories
-  // sl.registerLazySingleton<QuestRepository>(() => QuestRepositoryImpl(sl()));
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
+  sl.registerLazySingleton<QuestRepository>(() => MockQuestRepository());
 
   // Blocs
-  // sl.registerFactory(() => QuestBoardBloc(sl()));
+  sl.registerFactory(() => AuthBloc(sl()));
+  sl.registerFactory(() => QuestBoardBloc(sl()));
 }
